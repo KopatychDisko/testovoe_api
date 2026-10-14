@@ -46,8 +46,9 @@ class SyncResult(BaseModel):
 
 def normalize_phone(raw: str) -> str | None:
     """Return phone as +7XXXXXXXXXX, or None if it cannot be reduced to 11 digits."""
-    digits: str = re.sub(r"\D", "", raw)
-    if len(digits) == 10:
+    digits: str = re.sub(r"[^0-9]", "", raw)
+    # A 10-digit number starting with 7/8 is a truncated number with a country code, not a local one
+    if len(digits) == 10 and digits[0] not in ("7", "8"):
         return f"+7{digits}"
     if len(digits) == 11 and digits[0] in ("7", "8"):
         return f"+7{digits[1:]}"
